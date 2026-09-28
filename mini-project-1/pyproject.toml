@@ -1,0 +1,35 @@
+[project]
+name = "prodml"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "doaa450", email = "doaa75644@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "pandas>=3.0.6",
+    "pyarrow>=25.0.1",
+    "pydantic-settings>=2.15.0",
+    "scikit-learn>=1.9.1",
+]
+
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff",
+    "black",
+    "pre-commit",
+]
+
+[tool.ruff]
+extend-exclude = ["notebooks"]
+
+[project.scripts]
+prodml = "prodml:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"
