@@ -21,5 +21,8 @@ class Settings(BaseSettings):
     test_size: float = 0.20
     random_state: int = 42
 
+    # Logging
+    log_level: str = "INFO"
+
 
 settings = Settings()

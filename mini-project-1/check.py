@@ -1,8 +1,8 @@
-import logging
+from prodml.logging_conf import setup_logging
+
+setup_logging()
 
 from prodml.predict import DurationPredictor
-
-logging.basicConfig(level=logging.INFO)
 
 p = DurationPredictor().load()
 sample = {"PULocationID": 82, "DOLocationID": 129, "trip_distance": 0.5}
