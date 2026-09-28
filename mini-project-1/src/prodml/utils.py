@@ -16,6 +16,11 @@ def timed[**P, R](func: Callable[P, R]) -> Callable[P, R]:
             return func(*args, **kwargs)
         finally:
             elapsed_ms = (time.perf_counter() - start) * 1000
-            logger.info("%s took %.2f ms", func.__qualname__, elapsed_ms)
+            logger.info(
+                "%s took %.2f ms",
+                func.__qualname__,
+                elapsed_ms,
+                extra={"latency_ms": round(elapsed_ms, 2)},
+            )
 
     return wrapper

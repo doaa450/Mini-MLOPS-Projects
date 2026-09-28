@@ -24,5 +24,7 @@ class Settings(BaseSettings):
     # Logging
     log_level: str = "INFO"
 
+    distance_warning_threshold: float = 30.0
+
 
 settings = Settings()

@@ -1,5 +1,10 @@
+import logging
 import pickle
 from pathlib import Path
+
+from prodml.logging_conf import setup_logging
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 from sklearn.feature_extraction import DictVectorizer
@@ -39,6 +44,6 @@ def train() -> dict[str, float]:
 
 
 if __name__ == "__main__":
+    setup_logging()
     metrics = train()
-    print(f"Validation RMSE: {metrics['rmse']:.2f}")
-    print(f"Validation MAE: {metrics['mae']:.2f}")
+    logger.info("training finished", extra=metrics)
