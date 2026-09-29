@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     # Paths
     data_path: str = "data/green_tripdata_2026-02.parquet"
     model_path: str = "models/model.pkl"
+    onnx_path: str = "models/model.onnx"
 
     # Serving
     port: int = 8000
