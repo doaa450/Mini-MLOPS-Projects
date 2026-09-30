@@ -6,6 +6,8 @@ import uuid
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 from prodml.api.schemas import (
     BatchPredictionRequest,
@@ -56,6 +58,29 @@ app = FastAPI(
     description="API for predicting NYC Green Taxi trip duration.",
     lifespan=lifespan,
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
+    """Turn Pydantic validation errors into a clean, readable 422 response."""
+    errors = [
+        {"field": ".".join(str(loc) for loc in err["loc"]), "message": err["msg"]}
+        for err in exc.errors()
+    ]
+    return JSONResponse(
+        status_code=422, content={"detail": "Validation failed", "errors": errors}
+    )
+
+
+@app.exception_handler(Exception)
+async def unexpected_exception_handler(
+    request: Request, exc: Exception
+) -> JSONResponse:
+    """Log unexpected errors with their traceback, but never leak them to the client."""
+    logger.exception("unexpected error", extra={"path": request.url.path})
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
 @app.middleware("http")
