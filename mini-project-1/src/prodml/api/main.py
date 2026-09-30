@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 
+from prodml.api.schemas import PredictionRequest, PredictionResponse
 from prodml.config import settings
 from prodml.logging_conf import correlation_id_var, setup_logging
 from prodml.predict import DurationPredictor
@@ -89,3 +90,20 @@ async def metadata() -> dict:
         "framework": "onnx",
         "artifact_hash": model_state.get("artifact_hash"),
     }
+
+
+@app.post("/predict", response_model=PredictionResponse)
+async def predict(payload: PredictionRequest) -> PredictionResponse:
+    """Predict trip duration for a single ride."""
+    predictor: DurationPredictor = model_state["predictor"]
+
+    start = time.perf_counter()
+    duration = predictor.predict_one(payload.model_dump())
+    latency_ms = (time.perf_counter() - start) * 1000
+
+    return PredictionResponse(
+        prediction=duration,
+        model_version=settings.model_version,
+        correlation_id=correlation_id_var.get(),
+        latency_ms=round(latency_ms, 2),
+    )
