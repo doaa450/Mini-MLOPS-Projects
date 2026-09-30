@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "fastapi>=0.141.1",
     "onnxruntime>=1.30.0",
     "pandas>=3.0.6",
     "pyarrow>=25.0.1",
@@ -15,6 +16,7 @@ dependencies = [
     "python-json-logger>=4.2.0",
     "scikit-learn>=1.9.1",
     "skl2onnx>=1.20.0",
+    "uvicorn[standard]>=0.54.0",
 ]
 
 

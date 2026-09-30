@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     model_path: str = "models/model.pkl"
     onnx_path: str = "models/model.onnx"
 
+    # Model metadata
+    model_version: str = "0.1.0"
+    metadata_path: str = "models/metadata.json"
+
     # Serving
     port: int = 8000
 
