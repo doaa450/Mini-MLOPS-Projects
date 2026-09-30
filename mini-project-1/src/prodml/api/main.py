@@ -7,7 +7,12 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 
-from prodml.api.schemas import PredictionRequest, PredictionResponse
+from prodml.api.schemas import (
+    BatchPredictionRequest,
+    BatchPredictionResponse,
+    PredictionRequest,
+    PredictionResponse,
+)
 from prodml.config import settings
 from prodml.logging_conf import correlation_id_var, setup_logging
 from prodml.predict import DurationPredictor
@@ -103,6 +108,25 @@ async def predict(payload: PredictionRequest) -> PredictionResponse:
 
     return PredictionResponse(
         prediction=duration,
+        model_version=settings.model_version,
+        correlation_id=correlation_id_var.get(),
+        latency_ms=round(latency_ms, 2),
+    )
+
+
+@app.post("/predict/batch", response_model=BatchPredictionResponse)
+async def predict_batch(payload: BatchPredictionRequest) -> BatchPredictionResponse:
+    """Predict trip duration for a list of rides."""
+    predictor: DurationPredictor = model_state["predictor"]
+
+    records = [ride.model_dump() for ride in payload.rides]
+
+    start = time.perf_counter()
+    predictions = predictor.predict_batch(records)
+    latency_ms = (time.perf_counter() - start) * 1000
+
+    return BatchPredictionResponse(
+        predictions=predictions,
         model_version=settings.model_version,
         correlation_id=correlation_id_var.get(),
         latency_ms=round(latency_ms, 2),
