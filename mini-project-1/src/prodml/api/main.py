@@ -2,12 +2,13 @@ import hashlib
 import json
 import logging
 import time
+import uuid
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 from prodml.config import settings
-from prodml.logging_conf import setup_logging
+from prodml.logging_conf import correlation_id_var, setup_logging
 from prodml.predict import DurationPredictor
 
 logger = logging.getLogger(__name__)
@@ -49,6 +50,22 @@ app = FastAPI(
     description="API for predicting NYC Green Taxi trip duration.",
     lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def add_correlation_id(request: Request, call_next):
+    """Generate a correlation ID for every request, attach it, return it as a header."""
+    correlation_id = str(uuid.uuid4())
+    correlation_id_var.set(correlation_id)
+
+    logger.info(
+        "request received",
+        extra={"method": request.method, "path": request.url.path},
+    )
+
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = correlation_id
+    return response
 
 
 @app.get("/health")
