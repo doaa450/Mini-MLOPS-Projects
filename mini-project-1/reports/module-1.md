@@ -52,3 +52,39 @@ ONNX model and asserts `np.allclose(pred_pkl, pred_onnx, atol=1e-4)`. **Result: 
 | ONNX   | 0.031 ms      | 0.035 ms      |
 
 ONNX is roughly 6.5x faster than pickle on both mean and p95 latency.
+
+## 🐳 Containerization (Module 1, Step 07)
+
+### Image size: with vs without `.dockerignore`
+
+| Build | Content Size |
+|-------|---------------|
+| Without `.dockerignore` | 252 MB |
+| With `.dockerignore`    | 252 MB |
+
+No measurable difference. The `Dockerfile` already copies only specific files
+(`pyproject.toml`, `README.md`, `src/`) rather than `COPY . .`, so most of what
+`.dockerignore` would normally exclude (`.venv`, `notebooks/`, `tests/`, `data/`)
+was never copied in the first place. `.dockerignore` is kept anyway as a safeguard
+in case the `Dockerfile` is later changed to `COPY . .`.
+
+### Single-stage vs multi-stage build
+
+| Build         | Content Size |
+|---------------|---------------|
+| Single-stage  | 258 MB |
+| Multi-stage   | 252 MB |
+
+The difference in content size is small (6 MB) for this project, because the
+`Dockerfile` already copies a minimal, specific set of files in both cases. The
+real benefit of the multi-stage build is **not raw size here** but **isolation**:
+build-time tools and intermediate files (pip's build dependencies, wheel caches)
+live only in the `builder` stage and are never present in the final `runtime`
+image — only the installed package itself is copied forward via
+`COPY --from=builder /install /usr/local`. This keeps the production image
+cleaner and reduces what an attacker could find or exploit if the container
+were compromised.
+
+### Non-root user confirmed
+
+The container runs as `appuser` (UID 1000), not `root`.
