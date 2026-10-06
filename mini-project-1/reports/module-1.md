@@ -88,3 +88,35 @@ were compromised.
 ### Non-root user confirmed
 
 The container runs as `appuser` (UID 1000), not `root`.
+
+## 📈 MLOps Maturity Self-Assessment
+
+**Current level: Level 2 (ML Pipeline) — partially reached**
+
+This project has automated training (`prodml.train`), a CI-like quality gate
+(pre-commit hooks + pytest with a 70% coverage gate), and basic run metadata
+logged alongside the model (`models/metadata.json`: timestamp, MAE, RMSE).
+These place it past Level 0 (notebooks only) and Level 1 (manual scripts, no
+tracking), into the early part of Level 2.
+
+**What's missing to fully reach Level 2, and what Module 2 will likely add:**
+Real experiment tracking (e.g. MLflow) that logs and compares every training
+run rather than overwriting one metadata file, and a single automated pipeline
+that chains data → train → export → test → deploy, instead of these steps
+being run manually in sequence as separate commands.
+
+## ☑️ Definition of Done
+
+1. ✅ GitHub repo public with more than one commit
+2. ⏳ Docker Hub token saved securely — logged in via `docker login`, push in progress
+3. ✅ `docker run hello-world` works; WSL2 confirmed (Docker Desktop running on WSL2 integration)
+4. ⚠️ Package installs via `uv sync --extra dev` in a clean environment (project uses `uv`, not `pip install -e .`, as its package manager — same guarantee, different tool)
+5. ✅ Lint passes; pre-commit hooks installed
+6. ✅ Tests pass with coverage ≥ 70% (76.57%)
+7. ✅ Zero `print()` statements in `src/`
+8. ✅ `/health`, `/metadata`, `/predict`, `/predict/batch` all respond correctly
+9. ✅ ONNX parity test passes
+10. ⏳ Image pushed to Docker Hub and pullable by someone else; container confirmed to run as non-root (`appuser`) — push in progress, interrupted by network timeouts, retrying
+11. ✅ `README.md` gets a stranger to a prediction in 3 commands
+12. ✅ `reports/module-1.md` has: MAE, latency comparison, image-size comparison, serialization table, maturity self-assessment
+13. ⏳ Pull request opened, merged; `v0.1.0` tagged — no peer reviewers available for this solo submission; PR opened and self-reviewed before merge instead of the two-peer review described in the handbook
