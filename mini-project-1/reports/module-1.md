@@ -108,7 +108,7 @@ being run manually in sequence as separate commands.
 ## ☑️ Definition of Done
 
 1. ✅ GitHub repo public with more than one commit
-2. ⏳ Docker Hub token saved securely — logged in via `docker login`, push in progress
+2. ✅ Docker Hub token saved securely — logged in via `docker login`, image pushed successfully
 3. ✅ `docker run hello-world` works; WSL2 confirmed (Docker Desktop running on WSL2 integration)
 4. ⚠️ Package installs via `uv sync --extra dev` in a clean environment (project uses `uv`, not `pip install -e .`, as its package manager — same guarantee, different tool)
 5. ✅ Lint passes; pre-commit hooks installed
